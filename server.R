@@ -20,6 +20,13 @@ function(input, output, session) {
   })
   
   
+  output$heatmap <- renderD3heatmap({
+    
+    
+    d3heatmap(heatmapdata, dendrogram = "none",color = "Blues")
+  
+  })
+  
  pal <- colorFactor(
     palette = "Set1",
     domain = train$Category

@@ -8,16 +8,19 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Spatial", tabName = "Spatial", icon = icon("th")),
+      menuItem("Heatmap", tabName = "Heatmap", icon = icon("th")),
       menuItem("WordCloud", tabName = "WordCloud", icon = icon("dashboard"))
       
     )
   ),
   ## Body content
   dashboardBody(
-    
-    
     tabItems(
       
+      tabItem(tabName = "Heatmap",
+              mainPanel(d3heatmapOutput("heatmap"))
+      ),
+    
       tabItem(tabName = "WordCloud",
               mainPanel(plotOutput("cloudmap"))
       ),

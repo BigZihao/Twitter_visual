@@ -195,6 +195,42 @@ barplot(d[1:10,]$freq, las = 2, names.arg = d[1:10,]$word,
 
 
 
+##################################
+###  Time HeatMaps ###
+##################################
+
+names(train)
+summary(train$Time)
+class(train$Time)
+
+library(lubridate)
+train$weekdays = weekdays(train$Time)
+train$hours = hour(train$Time)
+
+heatmapdata = train %>% group_by(weekdays,hours) %>% summarise(tweets = sum(n()))
+
+summary(heatmapdata)
+
+
+setwd("S:/Data Science Think Tank/Twitter_visual")
+write.csv(heatmapdata,"data/heatmapdata.csv", row.names=FALSE)
+
+
+
+library(reshape)
+library(knitr)
+library(d3heatmap)
+heatmapdata$hours = factor(heatmapdata$hours,levels = unique(heatmapdata$hours))
+heatmapdata$weekdays = factor(heatmapdata$weekdays ,levels = unique(heatmapdata$weekdays ))
+
+heatmapdata2 = cast(heatmapdata, weekdays ~ hours)
+heatmapdata2 
+class(heatmapdata2)
+
+d3heatmap(heatmapdata2, dendrogram = "none",color = "Blues")
+
+
+
 
 ##################################
 ###  Social net ###

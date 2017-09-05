@@ -8,6 +8,9 @@ library("tm")
 library("SnowballC")
 library("wordcloud")
 library("RColorBrewer")
+library(reshape)
+library(knitr)
+library(d3heatmap)
 
 
 
@@ -24,3 +27,14 @@ min(train$Time)
 
 
 d = read.csv("data/clouddata.csv")
+
+
+
+heatmapdata = read.csv("data/heatmapdata.csv")
+heatmapdata$hours = factor(heatmapdata$hours,levels = unique(heatmapdata$hours))
+heatmapdata$weekdays = factor(heatmapdata$weekdays ,levels = unique(heatmapdata$weekdays ))
+heatmapdata = cast(heatmapdata, weekdays ~ hours)
+heatmapdata
+class(heatmapdata)
+heatmapdata[is.na(heatmapdata)] = 0
+
