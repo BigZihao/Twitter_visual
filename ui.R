@@ -8,8 +8,11 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Spatial", tabName = "Spatial", icon = icon("th")),
-      menuItem("Heatmap", tabName = "Heatmap", icon = icon("th")),
-      menuItem("WordCloud", tabName = "WordCloud", icon = icon("dashboard"))
+      menuItem("net", tabName = "net", icon = icon("dashboard")),
+      menuItem("WordCloud", tabName = "WordCloud", icon = icon("dashboard")),
+      menuItem("Heatmap", tabName = "Heatmap", icon = icon("th"))
+     
+      
       
     )
   ),
@@ -17,12 +20,23 @@ ui <- dashboardPage(
   dashboardBody(
     tabItems(
       
+      tabItem(tabName = "net",
+              sidebarLayout(    
+              sidebarPanel(
+                selectInput("group", "group:", 
+                            choices=c("language","gender")),
+                hr(),
+                helpText("Select groups"),width = 2
+              ),
+              mainPanel(forceNetworkOutput( "net", width = "130%", height = "400px"))
+      )),
+      
       tabItem(tabName = "Heatmap",
               mainPanel(d3heatmapOutput("heatmap"))
       ),
     
       tabItem(tabName = "WordCloud",
-              mainPanel(plotOutput("cloudmap"))
+              mainPanel(wordcloud2Output("cloudmap"))
       ),
 
       # First tab content

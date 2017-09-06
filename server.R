@@ -11,21 +11,26 @@ library(mapproj)
 
 function(input, output, session) {
   
-  output$cloudmap <-  renderPlot({
+
+output$net <- renderForceNetwork(forceNetwork(Links = edges, Nodes = nodes, Source = "source",
+  Target = "target",  NodeID = "nodes",Nodesize="size",
+  Group = input$group, opacity = 0.8))
+  
+ # output$net <- renderSimpleNetwork(simpleNetwork(edges, Source = "source", Target = "target", width = "100%"))
+  
+  
+  output$cloudmap <-  renderWordcloud2({
     
-    wordcloud(d$word, d$freq, 
-              min.freq = 1,
-              max.words=50, random.order=FALSE, rot.per=0.35, 
-              colors=brewer.pal(8, "Dark2"))
+    wordcloud2(data = d)
   })
   
   
   output$heatmap <- renderD3heatmap({
     
-    
     d3heatmap(heatmapdata, dendrogram = "none",color = "Blues")
   
   })
+  
   
  pal <- colorFactor(
     palette = "Set1",

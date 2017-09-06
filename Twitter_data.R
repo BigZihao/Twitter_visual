@@ -184,7 +184,17 @@ wordcloud(d$word, d$freq,
           max.words=50, random.order=FALSE, rot.per=0.35, 
           colors=brewer.pal(8, "Dark2"))
 
+require(devtools)
+install_github("lchiffon/wordcloud2")
 
+library(wordcloud2)
+wordcloud2(data = d)
+
+letterCloud(d, word = "zillow", wordSize = 1)
+
+
+dim(d)
+dim(demoFreq)
 
 findFreqTerms(myDTM, lowfreq = 4)
 findAssocs(myDTM, terms = "freedom", corlimit = 0.3)
@@ -237,6 +247,104 @@ d3heatmap(heatmapdata2, dendrogram = "none",color = "Blues")
 ##################################
 
 
+# load twitteR to get tweets
+
+tweets <- tweets.df
+
+library(graphTweets)
+edges <- graphTweets::getEdges(data = tweets[1:500,], tweets = "text", source = "screenName",str.length = NULL)
+edges <- edges[!duplicated(edges),]
+edges$source <- as.character(edges$source)
+edges$target <- as.character(edges$target)
+
+edges <- edges[(edges$source %in% gsub("((\\.+)[[:space:]]*|[\\.\\-])|[[:punct:]]", "", edges$source, perl=TRUE)) &
+                 (edges$target %in% gsub("((\\.+)[[:space:]]*|[\\.\\-])|[[:punct:]]", "", edges$target, perl=TRUE)),]
+
+edges <- edges[(edges$source %in% gsub(ell_def, "", edges$source, perl=TRUE)) &
+                 (edges$target %in% gsub(ell_def, "", edges$target, perl=TRUE)),]
+
+edges <- edges[(edges$source!="") & (edges$target!=""),]
+
+freq1 = names(sort(table(edges$source), decreasing=TRUE)[1:5])
+freq2 = names(sort( table(edges$target), decreasing=TRUE)[1:5])
+
+edges=edges[edges$target %in% freq2 | edges$source %in% freq1,]
+nodes <- getNodes(edges, source = "source", target = "target")
+
+
+a<-list()
+for (i in 1:length(nodes$nodes)){
+  print(i)
+  a[[i]] = tryCatch({
+  expr= getUser(nodes$nodes[i])},  error = function(i) {
+  return(NA)
+  })
+  if(is.na(a[[i]])==TRUE){
+    nodes[i,]<-NA
+  }
+}
+nodes$nodes
+
+nodes <- nodes[!is.na(nodes$nodes),]
+nodes <- data.frame(nodes)
+a<-a[!sapply(a, function(x) all(is.na(x)))]
+
+length(a)
+length(nodes$nodes)
+#a = sapply(nodes$nodes,getUser)
+b = sapply(a, function(x) x$lang)
+c = sapply(a, function(x) x$followersCount)
+c
+nodes$group = b
+nodes$size = c/median(c)
+nodes$size[nodes$size >20]=20
+
+
+library(plyr)
+
+edges <- edges[!is.na(edges$source) & !is.na(edges$target),]
+nodes = nodes[nodes$nodes %in% unique(c(edges$source,edges$target)),]
+
+edges$source  = as.numeric(mapvalues(edges$source , from = nodes$nodes, to = c(0:(length(nodes$nodes)-1))))
+edges$target  = as.numeric(mapvalues(edges$target , from = nodes$nodes, to = c(0:(length(nodes$nodes)-1))))
+
+
+forceNetwork(Links = edges, Nodes = nodes, Source = "source",
+             Target = "target",  NodeID = "nodes",Nodesize="size",
+             Group = "group", opacity = 0.8)
+
+
+write.csv(edges,"data/edges.csv", row.names=FALSE)
+write.csv(nodes,"data/nodes.csv", row.names=FALSE)
+
+
+
+networkD3::simpleNetwork(edges, Source = "source", Target = "target", width = "100%")
+
+library(networkD3)
+data(MisLinks, MisNodes)
+forceNetwork(Links = MisLinks, Nodes = MisNodes, Source = "source",
+             Target = "target", Value = "value", NodeID = "name",
+             Group = "group", opacity = 0.4)
+
+
+
+
+
+# plot
+g <- igraph::graph.data.frame(edges, directed=TRUE, vertices = nodes)
+plot(g)
+
+setwd("S:/Data Science Think Tank/Twitter_visual")
+source("twitterMap.R")
+twitterMap("DATAzihao",plotType = "both")
+library(maps)
+data(world.cities)
+grep("Baltimore", world.cities[,1])
+
+
+
+
 
 user <- zillow_mentioners[10]
 
@@ -247,6 +355,9 @@ christi_followers <- realtor_christi$getFollowers(retryOnRateLimit=180)
 
 christi_followers[1]
 
+
+
+
 userTimeline(christi_followers[15], n=20)
 
 christi_followers_df = rbindlist(lapply(christi_followers,as.data.frame))
@@ -254,5 +365,21 @@ christi_followers_df = rbindlist(lapply(christi_followers,as.data.frame))
 head(christi_followers_df)
 
 
+
+##################################
+###  Social net ###
+##################################
+
+
+data(unemployment)
+head( unemployment)
+
+library(highcharter)
+hcmap("countries/us/us-all-all", data = unemployment,
+      name = "Unemployment", value = "value", joinBy = c("hc-key", "code"),
+      borderColor = "transparent") %>%
+  hc_colorAxis(dataClasses = color_classes(c(seq(0, 10, by = 2), 50))) %>% 
+  hc_legend(layout = "vertical", align = "right",
+            floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
 
 
