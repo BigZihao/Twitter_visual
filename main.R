@@ -10,3 +10,33 @@ rsconnect::setAccountInfo(name='zihaozhangap', token='CCC977CDDB18ED55C68DBA2E66
 rsconnect::deployApp("S:/Data Science Think Tank/Twitter_visual")
 
 
+
+
+
+
+
+
+
+
+
+library(d3heatmap)
+library(shiny)
+
+ui <- fluidPage(
+  d3heatmapOutput("heatmap"),
+ wordcloud2Output("cloudmap")
+)
+
+server <- function(input, output, session) {
+  
+  output$cloudmap <-  renderWordcloud2({
+    wordcloud2(data = d)
+  })
+  
+  output$heatmap <- renderD3heatmap({
+    d3heatmap::d3heatmap(heatmapdata, dendrogram = "none",color = "Blues")
+  })
+}
+
+shinyApp(ui, server)
+

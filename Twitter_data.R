@@ -331,16 +331,6 @@ forceNetwork(Links = MisLinks, Nodes = MisNodes, Source = "source",
 
 
 
-# plot
-g <- igraph::graph.data.frame(edges, directed=TRUE, vertices = nodes)
-plot(g)
-
-setwd("S:/Data Science Think Tank/Twitter_visual")
-source("twitterMap.R")
-twitterMap("DATAzihao",plotType = "both")
-library(maps)
-data(world.cities)
-grep("Baltimore", world.cities[,1])
 
 
 

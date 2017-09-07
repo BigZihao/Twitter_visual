@@ -8,8 +8,14 @@
 # server.R
 library(maps)
 library(mapproj)
+library(d3heatmap)
 
 function(input, output, session) {
+  
+  output$heatmap <- renderD3heatmap({
+    d3heatmap::d3heatmap(heatmapdata, dendrogram = "none",color = "Blues")
+  })
+  
   
 
 output$net <- renderForceNetwork(forceNetwork(Links = edges, Nodes = nodes, Source = "source",
@@ -25,12 +31,7 @@ output$net <- renderForceNetwork(forceNetwork(Links = edges, Nodes = nodes, Sour
   })
   
   
-  output$heatmap <- renderD3heatmap({
-    
-    d3heatmap(heatmapdata, dendrogram = "none",color = "Blues")
-  
-  })
-  
+
   
  pal <- colorFactor(
     palette = "Set1",

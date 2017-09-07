@@ -1,6 +1,7 @@
 
 
 library(shinydashboard)
+library(d3heatmap)
 
 ui <- dashboardPage(
   dashboardHeader(title = "Twitter Visual"),
@@ -8,9 +9,11 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Spatial", tabName = "Spatial", icon = icon("th")),
-      menuItem("net", tabName = "net", icon = icon("dashboard")),
-      menuItem("WordCloud", tabName = "WordCloud", icon = icon("dashboard")),
-      menuItem("Heatmap", tabName = "Heatmap", icon = icon("th"))
+      
+      menuItem("SocialNet", tabName = "net", icon = icon("dashboard")),
+      menuItem("WordCloud", tabName = "WordCloud", icon = icon("dashboard"))
+   #   menuItem("Heatmap", tabName = "Heatmap", icon = icon("th"))
+     
      
       
       
@@ -19,6 +22,10 @@ ui <- dashboardPage(
   ## Body content
   dashboardBody(
     tabItems(
+      
+      tabItem(tabName = "Heatmap",
+              mainPanel(d3heatmapOutput("heatmap"))
+      ),
       
       tabItem(tabName = "net",
               sidebarLayout(    
@@ -31,12 +38,10 @@ ui <- dashboardPage(
               mainPanel(forceNetworkOutput( "net", width = "130%", height = "400px"))
       )),
       
-      tabItem(tabName = "Heatmap",
-              mainPanel(d3heatmapOutput("heatmap"))
-      ),
+    
     
       tabItem(tabName = "WordCloud",
-              mainPanel(wordcloud2Output("cloudmap"))
+              fluidPage(wordcloud2Output("cloudmap"))
       ),
 
       # First tab content
